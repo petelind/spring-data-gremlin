@@ -45,9 +45,9 @@ public class Application {
     private static final String RELATION_ID = "2333";
     private static final String RELATION_NAME = "brother";
 
-    private final Person person = new Person(PERSON_ID, PERSON_NAME, PERSON_AGE);
-    private final Person person0 = new Person(PERSON_ID_0, PERSON_NAME_0, PERSON_AGE_0);
-    private final Person person1 = new Person(PERSON_ID_1, PERSON_NAME_1, PERSON_AGE_1);
+    private final Person person = new Person(PERSON_ID, PERSON_NAME, PERSON_AGE, "pk");
+    private final Person person0 = new Person(PERSON_ID_0, PERSON_NAME_0, PERSON_AGE_0, "pk");
+    private final Person person1 = new Person(PERSON_ID_1, PERSON_NAME_1, PERSON_AGE_1, "pk");
     private final Relation relation = new Relation(RELATION_ID, RELATION_NAME, person0, person1);
     private final Network network = new Network();
 
