@@ -53,17 +53,26 @@ public abstract class AbstractGremlinSourceReader {
         }
 
         final Object id = source.getId().get();
-        final Field idField = source.getIdField();
+        final Class<?> idType = source.getIdField().getType();
 
-        if (idField.getType() == String.class) {
+        if (idType == String.class) {
             return id.toString();
-        } else if (idField.getType() == Integer.class) {
-            Assert.isTrue(id instanceof Integer, "source Id should be Integer.");
-            return id;
-        } else if (idField.getType() == Long.class && id instanceof Integer) {
-            return Long.valueOf((Integer) id);
-        } else if (idField.getType() == Long.class && id instanceof Long) {
-            return id;
+        }
+        if (idType == Integer.class || idType == int.class) {
+            if (id instanceof Integer) {
+                return id;
+            }
+            if (id instanceof Number) {
+                return ((Number) id).intValue();
+            }
+        }
+        if (idType == Long.class || idType == long.class) {
+            if (id instanceof Long) {
+                return id;
+            }
+            if (id instanceof Number) {
+                return ((Number) id).longValue();
+            }
         }
 
         throw new GremlinEntityInformationException("unsupported id field type: " + id.getClass().getSimpleName());

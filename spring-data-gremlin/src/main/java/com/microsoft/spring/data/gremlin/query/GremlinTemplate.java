@@ -169,13 +169,31 @@ public class GremlinTemplate implements GremlinOperations, ApplicationContextAwa
     }
 
     private Object getEdgeAnnotatedFieldValue(@NonNull Field field, @NonNull Object vertexId) {
-        if (field.getType() == String.class || field.getType() == Long.class || field.getType() == Integer.class) {
-            return vertexId;
-        } else if (field.getType().isPrimitive()) {
-            throw new GremlinUnexpectedEntityTypeException("only String/Long/Integer type of Id Field is allowed");
-        } else {
-            return this.findVertexById(vertexId, GremlinUtils.toGremlinSource(field.getType()));
+        if (field.getType() == String.class) {
+            return vertexId.toString();
         }
+        if (field.getType() == Long.class) {
+            if (vertexId instanceof Long) {
+                return vertexId;
+            }
+            if (vertexId instanceof Number) {
+                return ((Number) vertexId).longValue();
+            }
+            return Long.valueOf(vertexId.toString());
+        }
+        if (field.getType() == Integer.class) {
+            if (vertexId instanceof Integer) {
+                return vertexId;
+            }
+            if (vertexId instanceof Number) {
+                return ((Number) vertexId).intValue();
+            }
+            return Integer.valueOf(vertexId.toString());
+        }
+        if (field.getType().isPrimitive()) {
+            throw new GremlinUnexpectedEntityTypeException("only String/Long/Integer type of Id Field is allowed");
+        }
+        return this.findVertexById(vertexId, GremlinUtils.toGremlinSource(field.getType()));
     }
 
     @NonNull
