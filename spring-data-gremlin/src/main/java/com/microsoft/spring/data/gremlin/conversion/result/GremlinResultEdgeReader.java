@@ -37,9 +37,6 @@ public class GremlinResultEdgeReader extends AbstractGremlinResultReader impleme
         Assert.isTrue(results.size() == 1, "Edge should contain only one result.");
 
         final Result result = results.get(0);
-
-        Assert.isInstanceOf(Map.class, result.getObject(), "should be one instance of Map");
-
         final Map<String, Object> map = GremlinResultAdapter.toElementMap(result);
 
         Assert.isTrue(map.containsKey(PROPERTY_ID), "should contain id property");

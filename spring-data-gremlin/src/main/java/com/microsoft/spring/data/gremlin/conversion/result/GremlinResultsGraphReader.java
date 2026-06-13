@@ -47,10 +47,7 @@ public class GremlinResultsGraphReader extends AbstractGremlinResultReader imple
 
     private GremlinSource processResult(Result result) {
         final GremlinSource source;
-        final Object obj = result.getObject();
-
-        Assert.isInstanceOf(Map.class, obj, "should be an instance of Map");
-        @SuppressWarnings("unchecked") final Map<String, Object> map = (Map<String, Object>) result.getObject();
+        final Map<String, Object> map = GremlinResultAdapter.toElementMap(result);
 
         Assert.isTrue(map.containsKey(PROPERTY_TYPE), "should contain a type property");
         final String type = (String) map.get(PROPERTY_TYPE);

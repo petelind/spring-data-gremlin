@@ -9,27 +9,78 @@ import com.microsoft.spring.data.gremlin.common.Constants;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.tinkerpop.gremlin.driver.Result;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Property;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.springframework.lang.NonNull;
-import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Normalizes Gremlin driver {@link Result} payloads from GraphSON v1/v2/v3 into the map shape
- * expected by the result readers.
+ * Normalizes Gremlin driver {@link Result} payloads from GraphSON v1/v2/v3 and native
+ * {@link Vertex}/{@link Edge} elements into the map shape expected by the result readers.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GremlinResultAdapter {
 
     public static Map<String, Object> toElementMap(@NonNull Result result) {
         final Object object = result.getObject();
-        Assert.isInstanceOf(Map.class, object, "Gremlin result should be a Map");
-        @SuppressWarnings("unchecked")
-        final Map<String, Object> map = new LinkedHashMap<>((Map<String, Object>) object);
-        normalizeProperties(map);
-        return map;
+
+        if (object instanceof Map) {
+            @SuppressWarnings("unchecked")
+            final Map<String, Object> map = new LinkedHashMap<>((Map<String, Object>) object);
+            normalizeProperties(map);
+            return map;
+        }
+
+        if (object instanceof Vertex) {
+            return fromVertex((Vertex) object);
+        }
+
+        if (object instanceof Edge) {
+            return fromEdge((Edge) object);
+        }
+
+        throw new IllegalArgumentException(
+                "Unsupported Gremlin result type: " + object.getClass().getName());
+    }
+
+    private static Map<String, Object> fromVertex(Vertex vertex) {
+        final Map<String, Object> elementMap = new LinkedHashMap<>();
+        elementMap.put(Constants.PROPERTY_ID, vertex.id());
+        elementMap.put(Constants.PROPERTY_LABEL, vertex.label());
+        elementMap.put(Constants.PROPERTY_TYPE, Constants.RESULT_TYPE_VERTEX);
+
+        final Map<String, Object> properties = new LinkedHashMap<>();
+        vertex.keys().forEach(key -> {
+            final Property<?> property = vertex.property(key);
+            if (property.isPresent()) {
+                properties.put(key, wrapScalarPropertyValue(property.value()));
+            }
+        });
+        elementMap.put(Constants.PROPERTY_PROPERTIES, properties);
+        return elementMap;
+    }
+
+    private static Map<String, Object> fromEdge(Edge edge) {
+        final Map<String, Object> elementMap = new LinkedHashMap<>();
+        elementMap.put(Constants.PROPERTY_ID, edge.id());
+        elementMap.put(Constants.PROPERTY_LABEL, edge.label());
+        elementMap.put(Constants.PROPERTY_TYPE, Constants.RESULT_TYPE_EDGE);
+        elementMap.put(Constants.PROPERTY_OUTV, edge.outVertex().id());
+        elementMap.put(Constants.PROPERTY_INV, edge.inVertex().id());
+
+        final Map<String, Object> properties = new LinkedHashMap<>();
+        edge.keys().forEach(key -> {
+            final Property<?> property = edge.property(key);
+            if (property.isPresent()) {
+                properties.put(key, property.value());
+            }
+        });
+        elementMap.put(Constants.PROPERTY_PROPERTIES, properties);
+        return elementMap;
     }
 
     private static void normalizeProperties(Map<String, Object> elementMap) {

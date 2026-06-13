@@ -41,7 +41,13 @@ jobs:
       - name: Start Gremlin Server
         run: |
           docker run -d --name gremlin-server -p 8889:8182 tinkerpop/gremlin-server:3.8.1
-          sleep 15
+          for i in $(seq 1 30); do
+            if bash -c 'cat < /dev/null > /dev/tcp/localhost/8889' 2>/dev/null; then
+              echo "Gremlin Server is up"
+              break
+            fi
+            sleep 2
+          done
 
       - name: Integration tests
         run: mvn -B verify -Pfull-test -pl spring-data-gremlin
