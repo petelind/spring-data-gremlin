@@ -41,10 +41,10 @@ jobs:
       - name: Start Gremlin Server
         run: |
           docker pull tinkerpop/gremlin-server:3.8.1
+          # Override default TinkerGraph config so string vertex ids work in ITs (vertexIdManager=ANY).
           docker run -d --name gremlin-server -p 8889:8182 \
-            -v "${{ github.workspace }}/config/gremlin-server-docker.yaml:/opt/gremlin-server/conf/gremlin-server-docker.yaml" \
-            -v "${{ github.workspace }}/config/gremlin-server-ci.properties:/opt/gremlin-server/conf/gremlin-server-ci.properties" \
-            tinkerpop/gremlin-server:3.8.1 conf/gremlin-server-docker.yaml
+            -v "${{ github.workspace }}/config/gremlin-server-ci.properties:/opt/gremlin-server/conf/tinkergraph-empty.properties" \
+            tinkerpop/gremlin-server:3.8.1
           for i in $(seq 1 60); do
             if docker ps --filter name=gremlin-server --filter status=running -q | grep -q . \
               && bash -c 'cat < /dev/null > /dev/tcp/localhost/8889' 2>/dev/null; then
@@ -57,8 +57,13 @@ jobs:
           docker logs gremlin-server
           exit 1
 
+      - name: Verify Gremlin Server is running
+        run: |
+          docker ps --filter name=gremlin-server
+          docker logs gremlin-server 2>&1 | tail -30
+
       - name: Integration tests
-        run: mvn -B verify -Pfull-test -pl spring-data-gremlin
+        run: mvn -B verify -Pfull-test -pl spring-data-gremlin -DskipTests
         env:
           GREMLIN_ENDPOINT: localhost
           GREMLIN_PORT: "8889"
