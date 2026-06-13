@@ -1,0 +1,74 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License. See LICENSE in the project root for
+ * license information.
+ */
+package com.microsoft.spring.data.gremlin.config;
+
+import com.microsoft.spring.data.gremlin.common.domain.*;
+import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+public class GremlinConfigurationSupportUnitTest {
+
+    private static final String TEST_CONFIG_PACKAGE_NAME = "com.microsoft.spring.data.gremlin.config";
+    private static final String TEST_DOMAIN_PACKAGE_NAME = "com.microsoft.spring.data.gremlin.common.domain";
+    private TestConfig config;
+
+    @BeforeEach
+    public void setup() {
+        this.config = new TestConfig();
+    }
+
+    @Test
+    public void testGetMappingBasePackages() {
+        final Collection<String> basePackages = this.config.getMappingBasePackages();
+
+        assertNotNull(basePackages);
+        assertEquals(basePackages.size(), 1);
+        assertEquals(basePackages.toArray()[0], TEST_CONFIG_PACKAGE_NAME);
+    }
+
+    @Test
+    public void testGremlinMappingContext() throws ClassNotFoundException {
+        assertNotNull(this.config.gremlinMappingContext());
+    }
+
+    @Test
+    @SneakyThrows
+    public void testScanEntity() {
+        final Set<Class<?>> entities = this.config.scanEntities(TEST_DOMAIN_PACKAGE_NAME);
+        final Set<Class<?>> references = new HashSet<>(Arrays.asList(
+                Dependency.class, Library.class, Network.class, Person.class, Project.class,
+                Relationship.class, Roadmap.class, Service.class, SimpleDependency.class, InvalidDependency.class,
+                UserDomain.class, AdvancedUser.class, Student.class, Book.class, BookReference.class,
+                Neighbor.class, Master.class, Group.class, GroupOwner.class, Orange.class)
+        );
+
+        assertNotNull(entities);
+        assertEquals(entities.size(), references.size());
+
+        references.forEach(entity -> assertTrue(entities.contains(entity)));
+    }
+
+    @Test
+    @SneakyThrows
+    public void testScanEntityEmpty() {
+        final Set<Class<?>> entities = this.config.scanEntities("");
+
+        assertTrue(entities.isEmpty());
+    }
+
+    @NoArgsConstructor
+    private class TestConfig extends GremlinConfigurationSupport {
+
+    }
+}
