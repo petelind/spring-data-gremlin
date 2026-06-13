@@ -21,21 +21,21 @@ import example.springdata.gremlin.domain.Relation;
 import example.springdata.gremlin.repository.NetworkRepository;
 import example.springdata.gremlin.repository.PersonRepository;
 import example.springdata.gremlin.repository.RelationRepository;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
 @SpringBootTest
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = RepositoryConfiguration.class)
+@ExtendWith(SpringExtension.class)
+@Disabled("Requires a running Gremlin Server; run with -Pfull-test against localhost:8889")
 public class GremlinRepositoryIntegrationTest {
     private static final String PERSON_ID = "89757";
     private static final String PERSON_ID_0 = "0123456789";
@@ -50,9 +50,9 @@ public class GremlinRepositoryIntegrationTest {
     private static final String RELATION_ID = "2333";
     private static final String RELATION_NAME = "brother";
 
-    private final Person person = new Person(PERSON_ID, PERSON_NAME, PERSON_AGE);
-    private final Person person0 = new Person(PERSON_ID_0, PERSON_NAME_0, PERSON_AGE_0);
-    private final Person person1 = new Person(PERSON_ID_1, PERSON_NAME_1, PERSON_AGE_1);
+    private final Person person = new Person(PERSON_ID, PERSON_NAME, PERSON_AGE, "pk");
+    private final Person person0 = new Person(PERSON_ID_0, PERSON_NAME_0, PERSON_AGE_0, "pk");
+    private final Person person1 = new Person(PERSON_ID_1, PERSON_NAME_1, PERSON_AGE_1, "pk");
     private final Relation relation = new Relation(RELATION_ID, RELATION_NAME, person0, person1);
     private final Network network = new Network();
 
@@ -65,12 +65,12 @@ public class GremlinRepositoryIntegrationTest {
     @Autowired
     private NetworkRepository networkRepo;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.networkRepo.deleteAll();
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         this.networkRepo.deleteAll();
     }
@@ -85,20 +85,20 @@ public class GremlinRepositoryIntegrationTest {
         this.networkRepo.save(this.network);
 
         final Optional<Person> personOptional = this.personRepo.findById(this.person.getId());
-        Assert.assertTrue(personOptional.isPresent());
+        assertTrue(personOptional.isPresent());
 
         final Person personFound = personOptional.get();
-        Assert.assertEquals(personFound.getId(), this.person.getId());
-        Assert.assertEquals(personFound.getName(), this.person.getName());
-        Assert.assertEquals(personFound.getAge(), this.person.getAge());
+        assertEquals(personFound.getId(), this.person.getId());
+        assertEquals(personFound.getName(), this.person.getName());
+        assertEquals(personFound.getAge(), this.person.getAge());
 
         final Optional<Relation> relationOptional = this.relationRepo.findById(this.relation.getId());
-        Assert.assertTrue(relationOptional.isPresent());
+        assertTrue(relationOptional.isPresent());
 
         final Relation relationFound = relationOptional.get();
 
-        Assert.assertEquals(relationFound.getId(), this.relation.getId());
-        Assert.assertEquals(relationFound.getName(), this.relation.getName());
+        assertEquals(relationFound.getId(), this.relation.getId());
+        assertEquals(relationFound.getName(), this.relation.getName());
     }
 }
 

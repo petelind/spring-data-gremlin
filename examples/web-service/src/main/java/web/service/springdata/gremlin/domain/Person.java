@@ -21,20 +21,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Data
-@Vertex
+@Vertex(label = "person")
 @AllArgsConstructor
 @NoArgsConstructor
-public class MicroService {
+public class Person {
 
-    @Id
-    private String id;
+  public static final String DEFAULT_PARTITION_KEY = "demo";
 
-    private String partitionKey = "demo";
+  @Id
+  private String id;
 
-    private Map<String, String> properties = new HashMap<>();
+  private String name;
+
+  private String partitionKey = DEFAULT_PARTITION_KEY;
+
+  public Person(String id, String name) {
+    this.id = id;
+    this.name = name;
+    this.partitionKey = DEFAULT_PARTITION_KEY;
+  }
 }
-

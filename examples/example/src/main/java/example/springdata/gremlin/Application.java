@@ -15,21 +15,19 @@
  */
 package example.springdata.gremlin;
 
-import com.microsoft.spring.data.gremlin.common.GremlinFactory;
+import com.microsoft.spring.data.gremlin.repository.config.EnableGremlinRepositories;
 import example.springdata.gremlin.domain.Network;
 import example.springdata.gremlin.domain.Person;
 import example.springdata.gremlin.domain.Relation;
 import example.springdata.gremlin.repository.NetworkRepository;
 import example.springdata.gremlin.repository.PersonRepository;
 import example.springdata.gremlin.repository.RelationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 @SpringBootApplication
+@EnableGremlinRepositories
 public class Application {
 
     private static final String PERSON_ID = "89757";
@@ -51,17 +49,16 @@ public class Application {
     private final Relation relation = new Relation(RELATION_ID, RELATION_NAME, person0, person1);
     private final Network network = new Network();
 
-    @Autowired
-    private PersonRepository personRepo;
+    private final PersonRepository personRepo;
+    private final RelationRepository relationRepo;
+    private final NetworkRepository networkRepo;
 
-    @Autowired
-    private RelationRepository relationRepo;
-
-    @Autowired
-    private NetworkRepository networkRepo;
-
-    @Autowired
-    private GremlinFactory factory;
+    public Application(PersonRepository personRepo, RelationRepository relationRepo,
+                       NetworkRepository networkRepo) {
+        this.personRepo = personRepo;
+        this.relationRepo = relationRepo;
+        this.networkRepo = networkRepo;
+    }
 
     public static void main(String... args) {
         SpringApplication.run(Application.class, args);

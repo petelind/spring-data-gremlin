@@ -13,18 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package web.service.springdata.gremlin.repository;
 
-package web.service.springdata.gremlin;
+import com.microsoft.spring.data.gremlin.repository.GremlinRepository;
+import web.service.springdata.gremlin.domain.Person;
 
-import com.microsoft.spring.data.gremlin.repository.config.EnableGremlinRepositories;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
-@EnableGremlinRepositories
-public class Application {
-
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
+public interface PersonRepository extends GremlinRepository<Person, String> {
 }

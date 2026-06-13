@@ -4,59 +4,51 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.microsoft.spring.data.gremlin.examples</groupId>
-    <artifactId>spring-data-gremlin-examples</artifactId>
-    <version>0.0.1.BUILD-SNAPSHOT</version>
-    <packaging>pom</packaging>
-
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.0.RELEASE</version>
-        <relativePath/>
+        <groupId>com.microsoft.spring.data.gremlin</groupId>
+        <artifactId>spring-data-gremlin-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <groupId>com.microsoft.spring.data.gremlin.examples</groupId>
+    <artifactId>spring-data-gremlin-examples</artifactId>
+    <packaging>pom</packaging>
 
-    <name>Spring Data gremlin - Examples</name>
-    <description>Sample projects for Spring Data gremlin</description>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-commons</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-rest</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.microsoft.spring.data.gremlin</groupId>
-            <artifactId>spring-data-gremlin</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-    </dependencies>
+    <name>Spring Data Gremlin - Examples</name>
+    <description>Sample projects for Spring Data Gremlin</description>
 
     <modules>
         <module>example</module>
         <module>web-service</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.microsoft.spring.data.gremlin</groupId>
+                <artifactId>spring-data-gremlin-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.microsoft.spring.data.gremlin</groupId>
+            <artifactId>spring-data-gremlin-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -64,7 +56,13 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
 </project>

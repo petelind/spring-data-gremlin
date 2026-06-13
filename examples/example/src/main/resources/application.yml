@@ -1,8 +1,9 @@
 gremlin:
   endpoint: localhost
   port: 8889
-  username: your-username
-  password: your-password
-  sslEnabled: false
-  telemetryAllowed: true
-  maxContentLength: 1000
+  username: /dbs/database/colls/collection
+  password: password
+  ssl-enabled: false
+  telemetry-allowed: false
+  serializer: GRAPHSON_V3
+  max-content-length: 65536

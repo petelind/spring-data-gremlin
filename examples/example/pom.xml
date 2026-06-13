@@ -4,25 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>spring-data-gremlin-example</artifactId>
-    <name>Spring Data gremlin - Example</name>
+    <name>Spring Data Gremlin - Example</name>
 
     <parent>
         <groupId>com.microsoft.spring.data.gremlin.examples</groupId>
         <artifactId>spring-data-gremlin-examples</artifactId>
-        <version>0.0.1.BUILD-SNAPSHOT</version>
+        <version>3.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-        </dependency>
-    </dependencies>
-
 </project>

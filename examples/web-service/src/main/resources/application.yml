@@ -1,8 +1,9 @@
 gremlin:
-  endpoint: your-endpoint.gremlin.cosmosdb.azure.com
+  endpoint: ${GREMLIN_ENDPOINT:your-endpoint.gremlin.cosmos.azure.com}
   port: 443
-  username: your-username
-  password: your-password
-  sslEnabled: false
-  telemetryAllowed: true
-  maxContentLength: 1000
+  username: ${GREMLIN_USERNAME:/dbs/your-db/colls/your-graph}
+  password: ${GREMLIN_PASSWORD:your-password}
+  ssl-enabled: true
+  telemetry-allowed: false
+  serializer: ${GREMLIN_SERIALIZER:GRAPHSON_V2}
+  max-content-length: 65536
