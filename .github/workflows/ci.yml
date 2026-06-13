@@ -40,17 +40,22 @@ jobs:
 
       - name: Start Gremlin Server
         run: |
+          docker pull tinkerpop/gremlin-server:3.8.1
           docker run -d --name gremlin-server -p 8889:8182 \
             -v "${{ github.workspace }}/config/gremlin-server-docker.yaml:/opt/gremlin-server/conf/gremlin-server-docker.yaml" \
             -v "${{ github.workspace }}/config/gremlin-server-ci.properties:/opt/gremlin-server/conf/gremlin-server-ci.properties" \
-            tinkerpop/gremlin-server:3.8.1 ./bin/gremlin-server.sh conf/gremlin-server-docker.yaml
-          for i in $(seq 1 30); do
-            if bash -c 'cat < /dev/null > /dev/tcp/localhost/8889' 2>/dev/null; then
+            tinkerpop/gremlin-server:3.8.1 conf/gremlin-server-docker.yaml
+          for i in $(seq 1 60); do
+            if docker ps --filter name=gremlin-server --filter status=running -q | grep -q . \
+              && bash -c 'cat < /dev/null > /dev/tcp/localhost/8889' 2>/dev/null; then
               echo "Gremlin Server is up"
-              break
+              exit 0
             fi
             sleep 2
           done
+          echo "Gremlin Server failed to start"
+          docker logs gremlin-server
+          exit 1
 
       - name: Integration tests
         run: mvn -B verify -Pfull-test -pl spring-data-gremlin
